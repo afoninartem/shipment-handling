@@ -170,6 +170,21 @@ const mainTable = (currentArr) => {
 
     let fullHeight = 68; //height of .table-info
 
+    //add input color
+    const addColorInput = (event) => {
+      const target = event.target;
+      const targetCar = target.firstChild.textContent;
+      const allCars = document.querySelectorAll(`.car`);
+      const colorArea = [];
+      allCars.forEach(car => car.firstChild.textContent === targetCar ? colorArea.push(car) : null)
+      const inputColor = document.createElement(`input`);
+      inputColor.type = `color`;
+      inputColor.classList.add(`input-color`);
+      inputColor.value = 
+      inputColor.click();
+    }
+    //check input appearence
+
     //info constructor
     const setInfo = () => {
       const date = new Date();
@@ -209,9 +224,10 @@ const mainTable = (currentArr) => {
         car.classList.add(`car`);
         car.style.background = obj.carBackground;
         car.style.fontWeight = `bold`;
+        car.addEventListener(`click`, addColorInput);
         car.style.color = obj.textColor;
         if (obj.noCarColor) car.style.color = obj.noCarColor;
-        car.textContent = obj.car;
+        car.innerHTML = `<div>${obj.car}</div>`;
         table.appendChild(car);
         //shop name
         const name = document.createElement(`div`);
