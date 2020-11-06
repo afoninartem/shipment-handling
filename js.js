@@ -19,32 +19,32 @@ const tableHeader = [
 ];
 
 let colors = [
-  `Salmon`,
-  `Lime`,
-  `DarkGreen`,
-  `DeepPink`,
-  `Teal`,
-  `OrangeRed`,
-  `DarkOrange`,
-  `Yellow`,
-  `DeepSkyBlue`,
-  `Purple`,
-  `Blue`,
-  `SaddleBrown`,
-  `Gray`,
-  `Aqua`,
-  `Tomato`,
-  `Khaki`,
-  `Orchid`,
-  `MediumPurple`,
-  `LightSlateGray`,
-  `DarkSlateGray`,
-  `SteelBlue`,
-  `DodgerBlue`,
-  `Navy`,
+  `#FA8072`,
+  `#00FF00`,
+  `#006400`,
+  `#FF1493`,
+  `#008080`,
+  `#FF4500`,
+  `#FF8C00`,
+  `#FFFF00`,
+  `#00BFFF`,
+  `#800080`,
+  `#0000FF`,
+  `#8B4513`,
+  `#808080`,
+  `#00FFFF`,
+  `#FF6347`,
+  `#F0E68C`,
+  `#DA70D6`,
+  `#9370DB`,
+  `#778899`,
+  `#2F4F4F`,
+  `#4682B4`,
+  `#1E90FF`,
+  `#000080`,
 ];
 
-let darkColors = [`Navy`, `Purple`, `Blue`, `DarkSlateGray`, `SaddleBrown`, `DarkGreen`, `OrangeRed`];
+let darkColors = [`#000080`, `#800080`, `#0000FF`, `#2F4F4F`, `#8B4513`, `#006400`, `#F4500`];
 
 //test for colors
 // colors.forEach(color => {
@@ -173,6 +173,7 @@ const mainTable = (currentArr) => {
     //add input color
     const addColorInput = (event) => {
       const target = event.target;
+      console.log(target)
       const targetCar = target.firstChild.textContent;
       const allCars = document.querySelectorAll(`.car`);
       const colorArea = [];
@@ -180,7 +181,14 @@ const mainTable = (currentArr) => {
       const inputColor = document.createElement(`input`);
       inputColor.type = `color`;
       inputColor.classList.add(`input-color`);
-      inputColor.value = 
+      inputColor.value = target.dataset.backColor;
+      inputColor.addEventListener(`input`, (event) =>{
+        const currentColor = event.target.value;
+        colorArea.forEach(item => {
+          item.style.backgroundColor = currentColor;
+        })
+        
+      })
       inputColor.click();
     }
     //check input appearence
@@ -222,6 +230,7 @@ const mainTable = (currentArr) => {
         const car = document.createElement(`div`);
         car.classList.add(`cell`);
         car.classList.add(`car`);
+        car.dataset.backColor = obj.carBackground;
         car.style.background = obj.carBackground;
         car.style.fontWeight = `bold`;
         car.addEventListener(`click`, addColorInput);
