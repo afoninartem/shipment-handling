@@ -382,3 +382,15 @@ button:last-child {
   transform: rotate(-45deg);
   }
 
+  .warehouse {
+    background-color: rgba(246, 248, 131, 0.664);
+  }
+  .warehouse:empty {
+    background: transparent;
+  }
+
+  .underline {
+    text-decoration: underline;
+    font-weight: bold;
+  }
+

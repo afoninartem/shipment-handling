@@ -44,7 +44,15 @@ let colors = [
   `#000080`,
 ];
 
-let darkColors = [`#000080`, `#800080`, `#0000FF`, `#2F4F4F`, `#8B4513`, `#006400`, `#F4500`];
+let darkColors = [
+  `#000080`,
+  `#800080`,
+  `#0000FF`,
+  `#2F4F4F`,
+  `#8B4513`,
+  `#006400`,
+  `#F4500`,
+];
 
 //test for colors
 // colors.forEach(color => {
@@ -57,16 +65,30 @@ let darkColors = [`#000080`, `#800080`, `#0000FF`, `#2F4F4F`, `#8B4513`, `#00640
 //   if (darkColors.includes(color)) plate.style.color = `silver`;
 //   document.querySelector(`.color-test`).appendChild(plate);
 // });
-//end of test 
+//end of test
 
 //popup help
 const toggleManual = () => {
   const popup = document.querySelector(`.popup`);
   let visibility = window.getComputedStyle(popup);
   visibility.display === `none`
-    ? popup.style.display = `grid`
-    : popup.style.display = `none`;
-}
+    ? (popup.style.display = `grid`)
+    : (popup.style.display = `none`);
+};
+
+const toggleWarning = () => {
+  console.log(`WARNING!`)
+  // const warnPopup = document.querySelector(`.warning-popup`);
+  // let visibility = window.getComputedStyle(warnPopup);
+  // visibility.display === `none`
+  //   ? (popup.style.display = `grid`)
+  //   : (popup.style.display = `none`);
+};
+
+const isWarningMaterial = (mat, shop) => {
+  console.log(mat, shop);
+
+};
 
 const createTableParents = () => {
   const printArea = document.querySelector(`.print-area`);
@@ -173,24 +195,25 @@ const mainTable = (currentArr) => {
     //add input color
     const addColorInput = (event) => {
       const target = event.target;
-      console.log(target)
+      console.log(target);
       const targetCar = target.firstChild.textContent;
       const allCars = document.querySelectorAll(`.car`);
       const colorArea = [];
-      allCars.forEach(car => car.firstChild.textContent === targetCar ? colorArea.push(car) : null)
+      allCars.forEach((car) =>
+        car.firstChild.textContent === targetCar ? colorArea.push(car) : null
+      );
       const inputColor = document.createElement(`input`);
       inputColor.type = `color`;
       inputColor.classList.add(`input-color`);
       inputColor.value = target.dataset.backColor;
-      inputColor.addEventListener(`input`, (event) =>{
+      inputColor.addEventListener(`input`, (event) => {
         const currentColor = event.target.value;
-        colorArea.forEach(item => {
+        colorArea.forEach((item) => {
           item.style.backgroundColor = currentColor;
-        })
-        
-      })
+        });
+      });
       inputColor.click();
-    }
+    };
     //check input appearence
 
     //info constructor
@@ -256,42 +279,49 @@ const mainTable = (currentArr) => {
         const thick = document.createElement(`div`);
         thick.classList.add(`cell`);
         thick.classList.add(`thick`);
+        thick.classList.add(`warehouse`);
         if (shop.thickCatalog) thick.innerHTML = shop.thickCatalog;
         table.appendChild(thick);
         //20
         const thin = document.createElement(`div`);
         thin.classList.add(`cell`);
         thin.classList.add(`thin`);
+        thin.classList.add(`warehouse`);
         if (shop.thinCatalog) thin.innerHTML = shop.thinCatalog;
         table.appendChild(thin);
         //notebook
         const note = document.createElement(`div`);
         note.classList.add(`cell`);
         note.classList.add(`note`);
+        note.classList.add(`warehouse`);
         note.textContent = shop.notebook;
         table.appendChild(note);
         //cups
         const cup = document.createElement(`div`);
         cup.classList.add(`cell`);
         cup.classList.add(`cup`);
+        cup.classList.add(`warehouse`);
         cup.textContent = shop.cup;
         table.appendChild(cup);
         //pack
         const pack = document.createElement(`div`);
         pack.classList.add(`cell`);
         pack.classList.add(`pack`);
+        pack.classList.add(`warehouse`);
         pack.textContent = shop.pack;
         table.appendChild(pack);
         //folder
         const folder = document.createElement(`div`);
         folder.classList.add(`cell`);
         folder.classList.add(`folder`);
+        folder.classList.add(`warehouse`);
         folder.textContent = shop.folder;
         table.appendChild(folder);
         //vine
         const vine = document.createElement(`div`);
         vine.classList.add(`cell`);
         vine.classList.add(`vine`);
+        vine.classList.add(`warehouse`);
         vine.textContent = shop.vine;
         table.appendChild(vine);
         //towel
@@ -299,6 +329,7 @@ const mainTable = (currentArr) => {
           const towel = document.createElement(`div`);
           towel.classList.add(`cell`);
           towel.classList.add(`towel`);
+          towel.classList.add(`warehouse`);
           towel.textContent = shop.towel;
           table.appendChild(towel);
         }
@@ -308,6 +339,14 @@ const mainTable = (currentArr) => {
         other.classList.add(`other`);
         // other.textContent = ``;
         shop.otherMats.forEach((mat) => {
+          if (
+            mat[0].includes(`обои`) ||
+            mat[0].includes(`Комус`) ||
+            mat[0].includes(`сетка`) ||
+            mat[0].includes(`Бумага`) ||
+            mat[0].includes(`Декор`)
+          )
+            other.innerHTML += `<div class="underline">${mat[0]} - ${mat[1]}</div`;
           other.innerHTML += `<div>${mat[0]} - ${mat[1]}</div`;
         });
         shop.samples.length > 0
@@ -326,8 +365,8 @@ const mainTable = (currentArr) => {
         orders.classList.add(`orders`);
         shop.orders.forEach((order) => {
           order.orderComm.join().includes(`213`)
-          ? orders.innerHTML += ` <div class="room-is-done">${order.orderNum}</div>`
-          : orders.innerHTML += ` <div>${order.orderNum}</div>`
+            ? (orders.innerHTML += ` <div class="room-is-done">${order.orderNum}</div>`)
+            : (orders.innerHTML += ` <div>${order.orderNum}</div>`);
         });
         table.appendChild(orders);
 
@@ -384,9 +423,9 @@ const cutName = (mat) => {
   let matName = mat[0];
   let result;
   if (matName.includes(`с логотипом`))
-    matName = matName.split(`с логотипом`).join("");
+    matName = matName.split(`с логотипом`).join("").split("  ").join(" ");
   if (matName.includes(`Календарь`))
-    matName = matName.split(`Календарь`).join("");
+    matName = matName.split(`Календарь`).join("").split("  ").join(" ");
   switch (matName) {
     case `%Укомплектованный заказ Комус для ФС`:
       result = `Комус`;
@@ -490,15 +529,15 @@ document.getElementById("file").onchange = function () {
 
       const isReclamation = (str) => {
         return str.includes(`Рекламация`);
-      }
+      };
 
       const isMaterial = (str) => {
-        return (/.+;\d+/g).test(str)
-      }
+        return /.+;\d+/g.test(str);
+      };
 
       const isComment = (str) => {
-        return (!isReclamation(str) && !isMaterial(str));
-      }
+        return !isReclamation(str) && !isMaterial(str);
+      };
       shops.forEach((shop) => {
         const sub = {};
         sub.name = shop[0].split(`;`).join("").split(`_`)[1];
@@ -507,8 +546,9 @@ document.getElementById("file").onchange = function () {
         const materials = [];
         shop.forEach((str, i) => {
           str = str.split('"').join("");
-          if (isReclamation(str)) orders.push({orderNum: str.split(" ")[1], orderComm: []});
-          if (isComment(str)) orders[orders.length - 1].orderComm.push(str); 
+          if (isReclamation(str))
+            orders.push({ orderNum: str.split(" ")[1], orderComm: [] });
+          if (isComment(str)) orders[orders.length - 1].orderComm.push(str);
           if (isMaterial(str)) materials.push(str.split(";"));
         });
         sub.orders = orders;
@@ -528,13 +568,15 @@ document.getElementById("file").onchange = function () {
           shop.name.includes(`Колпино`)
         ) {
           obj.shipment = `spb`;
-        } 
-        if (shop.name.includes(`Шатура`) && shop.name.includes(`Бибирево`)) shop.name = `ТЦ Шатура (Пришвина)`;
+        }
+        if (shop.name.includes(`Шатура`) && shop.name.includes(`Бибирево`))
+          shop.name = `ТЦ Шатура (Пришвина)`;
       });
       obj.shops.forEach((shop) => {
         shop.otherMats = [];
         shop.samples = [];
         shop.materials.forEach((mat) => {
+          isWarningMaterial(mat, shop)
           if (mat[0].includes(`образ`) || mat[0].includes(`Образ`)) {
             shop.samples.push(mat);
           } else if (mat[0].includes(`80 полос`)) {
