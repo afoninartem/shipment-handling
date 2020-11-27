@@ -54,6 +54,14 @@ let darkColors = [
   `#F4500`,
 ];
 
+const highLigth = [
+  `обои`,
+  `Комус`,
+  `сетка`,
+  `Бумага`,
+  `Декор`
+];
+
 //test for colors
 // colors.forEach(color => {
 //   const plate = document.createElement(`div`);
@@ -76,18 +84,46 @@ const toggleManual = () => {
     : (popup.style.display = `none`);
 };
 
-const toggleWarning = () => {
-  console.log(`WARNING!`)
-  // const warnPopup = document.querySelector(`.warning-popup`);
-  // let visibility = window.getComputedStyle(warnPopup);
-  // visibility.display === `none`
-  //   ? (popup.style.display = `grid`)
-  //   : (popup.style.display = `none`);
+const getWarningText = (mat, shop) => {
+  let warnOrders = `<div class="warn-orders"></div>`;
+  shop.orders.forEach((order) => {
+    warnOrders += `<div class="warn-orders__item">${order.orderNum}</div>`;
+  });
+  const warn = document.querySelector(`.warn-text`);
+  const warnRow = document.createElement(`div`);
+  warnRow.classList.add(`warn-row`);
+  warnRow.innerHTML = `<div><span class="warn-mat">${mat[0]} - ${mat[1]}:</span> ${warnOrders}</div>`;
+  warn.appendChild(warnRow);
+  showWarning();
 };
 
-const isWarningMaterial = (mat, shop) => {
-  console.log(mat, shop);
+const showWarning = () => {
+document.querySelector(`.warning-popup`).style.display = `grid`;
+};
 
+const closeWarning = () => {
+  document.querySelector(`.warning-popup`).style.display = `none`;
+}
+
+const isWarningMaterial = (mat, shop) => {
+  if (mat[0].includes(`50х50мм`)) {
+    if (mat[1] % 30) getWarningText(mat, shop);
+  }
+  if (mat[0].includes(`ДК`)) {
+    if (+mat[1] !== 50) getWarningText(mat, shop);
+  }
+  if (mat[0] === `"Шампанское"`) {
+    if (mat[1] % 6) getWarningText(mat, shop);
+  }
+  if (mat[0] === `Леденец`) {
+    if (mat[1] > 20) getWarningText(mat, shop);
+  }
+  if (mat[0] === `Шоколадный набор`) {
+    if (mat[1] > 40) getWarningText(mat, shop);
+  }
+  if (mat[0] === `Шоколад с логотипом 5 гр.`) {
+    if (mat[1] % 250) getWarningText(mat, shop);
+  }
 };
 
 const createTableParents = () => {
@@ -138,11 +174,36 @@ const countRowsAndOrders = (arr) => {
 
 let shipmentTitle;
 
+//add reclamations
+const addReclamations = (arr, recRegion) => {
+  arr.unshift(
+  {
+    car: recRegion === `nn` 
+      ? `НН`
+      :  recRegion === `spb`
+      ? `СПБ` 
+      : ``,
+    shops: [{
+      name: recRegion === `nn` 
+      ? `РЕКЛАМАЦИИ НН`
+      :  recRegion === `spb`
+      ? `РЕКЛАМАЦИИ СПБ` 
+      : `РЕКЛАМАЦИИ СПБ И НН`,
+      materials: [],
+      orders: [],
+      otherMats: [],
+      samples: [],
+    }] 
+  }
+  );
+}
+
 const novgorod = () => {
   shipmentTitle = `Нижний Новгород`;
   document.querySelector(`.print-area`).innerHTML = "";
   createTableParents();
   const nn = objectsArr.filter((obj) => obj.shipment === `nn`);
+  addReclamations(nn, `nn`);
   countRowsAndOrders(nn);
   mainTable(nn);
 };
@@ -152,6 +213,7 @@ const piter = () => {
   document.querySelector(`.print-area`).innerHTML = "";
   createTableParents();
   const spb = objectsArr.filter((obj) => obj.shipment === `spb`);
+  addReclamations(spb, `spb`)
   countRowsAndOrders(spb);
   mainTable(spb);
 };
@@ -162,6 +224,8 @@ const novgorodAndPiter = () => {
   createTableParents();
   const nn = objectsArr.filter((obj) => obj.shipment === `nn`);
   const spb = objectsArr.filter((obj) => obj.shipment === `spb`);
+  addReclamations(spb, `spb`);
+  addReclamations(nn, `nn`);
   countRowsAndOrders(spb.concat(nn));
   mainTable(spb.concat(nn));
 };
@@ -214,7 +278,6 @@ const mainTable = (currentArr) => {
       });
       inputColor.click();
     };
-    //check input appearence
 
     //info constructor
     const setInfo = () => {
@@ -294,35 +357,35 @@ const mainTable = (currentArr) => {
         note.classList.add(`cell`);
         note.classList.add(`note`);
         note.classList.add(`warehouse`);
-        note.textContent = shop.notebook;
+        if (shop.notebook) note.innerHTML = shop.notebook;
         table.appendChild(note);
         //cups
         const cup = document.createElement(`div`);
         cup.classList.add(`cell`);
         cup.classList.add(`cup`);
         cup.classList.add(`warehouse`);
-        cup.textContent = shop.cup;
+        if (shop.cup) cup.innerHTML = shop.cup;
         table.appendChild(cup);
         //pack
         const pack = document.createElement(`div`);
         pack.classList.add(`cell`);
         pack.classList.add(`pack`);
         pack.classList.add(`warehouse`);
-        pack.textContent = shop.pack;
+        if (shop.pack) pack.innerHTML = shop.pack;
         table.appendChild(pack);
         //folder
         const folder = document.createElement(`div`);
         folder.classList.add(`cell`);
         folder.classList.add(`folder`);
         folder.classList.add(`warehouse`);
-        folder.textContent = shop.folder;
+        if (shop.folder) folder.innerHTML = shop.folder;
         table.appendChild(folder);
         //vine
         const vine = document.createElement(`div`);
         vine.classList.add(`cell`);
         vine.classList.add(`vine`);
         vine.classList.add(`warehouse`);
-        vine.textContent = shop.vine;
+        if (shop.vine) vine.innerHTML = shop.vine;
         table.appendChild(vine);
         //towel
         if (towels) {
@@ -330,7 +393,9 @@ const mainTable = (currentArr) => {
           towel.classList.add(`cell`);
           towel.classList.add(`towel`);
           towel.classList.add(`warehouse`);
-          towel.textContent = shop.towel;
+          shop.towel
+          ? towel.innerHTML = shop.towel
+          : null
           table.appendChild(towel);
         }
         //other
@@ -345,9 +410,11 @@ const mainTable = (currentArr) => {
             mat[0].includes(`сетка`) ||
             mat[0].includes(`Бумага`) ||
             mat[0].includes(`Декор`)
-          )
-            other.innerHTML += `<div class="underline">${mat[0]} - ${mat[1]}</div`;
-          other.innerHTML += `<div>${mat[0]} - ${mat[1]}</div`;
+          ) {
+            other.innerHTML += `<div class="underline"><span>${mat[0]} - ${mat[1]}</span></div`;
+          } else {
+            other.innerHTML += `<div>${mat[0]} - ${mat[1]}</div`;
+          }
         });
         shop.samples.length > 0
           ? (other.innerHTML += `<div class="sample">ОБРАЗЦЫ!</div>`)
@@ -560,12 +627,14 @@ document.getElementById("file").onchange = function () {
           shop.name.includes(`ижний`) ||
           shop.name.includes(`Чебоксары`) ||
           shop.name.includes(`(г. Владимир)`) ||
-          shop.name.includes(`Порт Уют`)
+          shop.name.includes(`Порт Уют`) ||
+          shop.name.includes(`НН`)
         ) {
           obj.shipment = `nn`;
         } else if (
           shop.name.includes(`Санкт`) ||
-          shop.name.includes(`Колпино`)
+          shop.name.includes(`Колпино`) ||
+          shop.name.includes(`Спб`)
         ) {
           obj.shipment = `spb`;
         }
@@ -576,7 +645,7 @@ document.getElementById("file").onchange = function () {
         shop.otherMats = [];
         shop.samples = [];
         shop.materials.forEach((mat) => {
-          isWarningMaterial(mat, shop)
+          isWarningMaterial(mat, shop);
           if (mat[0].includes(`образ`) || mat[0].includes(`Образ`)) {
             shop.samples.push(mat);
           } else if (mat[0].includes(`80 полос`)) {
@@ -588,17 +657,18 @@ document.getElementById("file").onchange = function () {
               ? (shop.thinCatalog = `<p>${mat[1]}</p><p>МСК</p>`)
               : (shop.thinCatalog = `<p>${mat[1]}</p><p>РЕГ</p>`);
           } else if (mat[0].includes(`Блокнот`)) {
-            shop.notebook = mat[1];
+            // shop.notebook = mat[1];
+            shop.notebook = `<p>${mat[1]}</p>`;
           } else if (mat[0].includes(`Кружка белая с логотипом`)) {
-            shop.cup = mat[1];
+            shop.cup = `<p>${mat[1]}</p>`;
           } else if (mat[0].includes(`Упаковка для кружки (мал.)`)) {
-            shop.pack = mat[1];
+            shop.pack = `<p>${mat[1]}</p>`;
           } else if (mat[0].includes(`Папка картонная`)) {
-            shop.folder = mat[1];
+            shop.folder = `<p>${mat[1]}</p>`;
           } else if (mat[0].includes(`Шампанское`)) {
-            shop.vine = mat[1];
+            shop.vine = `<p>${mat[1]}</p>`;
           } else if (mat[0].includes(`Полотенце с логотипом в тубусе`)) {
-            shop.towel = mat[1];
+            shop.towel = `<p>${mat[1]}</p>`;
           } else shop.otherMats.push(cutName(mat));
         });
       });
