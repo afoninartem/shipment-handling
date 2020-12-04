@@ -254,7 +254,7 @@ const mainTable = (currentArr) => {
       });
     });
 
-    let fullHeight = 68; //height of .table-info
+    let fullHeight = 68; //height of .table-info in px
 
     //add input color
     const addColorInput = (event) => {
@@ -646,7 +646,8 @@ document.getElementById("file").onchange = function () {
         shop.samples = [];
         shop.materials.forEach((mat) => {
           isWarningMaterial(mat, shop);
-          if (mat[0].includes(`образ`) || mat[0].includes(`Образ`)) {
+          // if (mat[0].includes(`образ`) || mat[0].includes(`Образ`)) {
+          if (mat[0].includes(`фасад`) || mat[0].includes(`50х50`)) {
             shop.samples.push(mat);
           } else if (mat[0].includes(`80 полос`)) {
             mat[0].includes(`(48 часов)`)
