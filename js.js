@@ -1,7 +1,8 @@
 let primaryArray = [];
 let objectsArr = [];
 let fileWasUploaded = false;
-const tableHeader = [
+let towels = false;
+const tableHeaderWithoutTowels = [
   `№`,
   `Маш.`,
   `Салон`,
@@ -13,6 +14,23 @@ const tableHeader = [
   `Папки`,
   `Шамп.`,
   // `Полот.`, подставляется автоматом, если надо.
+  `Другое`,
+  `Кол-во мест`,
+  `Заявка`,
+];
+
+const tableHeaderWithTowels = [
+  `№`,
+  `Маш.`,
+  `Салон`,
+  `Кат. 80`,
+  `Кат. 20`,
+  `Блок.`,
+  `Кружки`,
+  `Упак.`,
+  `Папки`,
+  `Шамп.`,
+  `Полот.`,
   `Другое`,
   `Кол-во мест`,
   `Заявка`,
@@ -54,13 +72,7 @@ let darkColors = [
   `#F4500`,
 ];
 
-const highLigth = [
-  `обои`,
-  `Комус`,
-  `сетка`,
-  `Бумага`,
-  `Декор`
-];
+const highLigth = [`обои`, `Комус`, `сетка`, `Бумага`, `Декор`];
 
 //test for colors
 // colors.forEach(color => {
@@ -98,12 +110,12 @@ const getWarningText = (mat, shop) => {
 };
 
 const showWarning = () => {
-document.querySelector(`.warning-popup`).style.display = `grid`;
+  document.querySelector(`.warning-popup`).style.display = `grid`;
 };
 
 const closeWarning = () => {
   document.querySelector(`.warning-popup`).style.display = `none`;
-}
+};
 
 const isWarningMaterial = (mat, shop) => {
   if (mat[0].includes(`50х50мм`)) {
@@ -145,7 +157,13 @@ const createTableParents = () => {
 const insertTableHeader = () => {
   let tables = document.querySelectorAll(`.table`);
   let table = tables[tables.length - 1];
-  let reverseTableHeader = Array.from(tableHeader);
+  let reverseTableHeader;
+  if (towels) {
+    reverseTableHeader = Array.from(tableHeaderWithTowels)
+  } else {
+    reverseTableHeader = Array.from(tableHeaderWithoutTowels);
+  }
+  // let reverseTableHeader = Array.from(tableHeader);
   reverseTableHeader.reverse();
   reverseTableHeader.forEach((el) => {
     const cell = document.createElement(`div`);
@@ -156,7 +174,6 @@ const insertTableHeader = () => {
   });
 };
 
-let towels = false;
 let ordersNum = 0;
 let tableRowsNum = 0;
 //quantity of orders and rows
@@ -176,27 +193,24 @@ let shipmentTitle;
 
 //add reclamations
 const addReclamations = (arr, recRegion) => {
-  arr.unshift(
-  {
-    car: recRegion === `nn` 
-      ? `НН`
-      :  recRegion === `spb`
-      ? `СПБ` 
-      : ``,
-    shops: [{
-      name: recRegion === `nn` 
-      ? `РЕКЛАМАЦИИ НН`
-      :  recRegion === `spb`
-      ? `РЕКЛАМАЦИИ СПБ` 
-      : `РЕКЛАМАЦИИ СПБ И НН`,
-      materials: [],
-      orders: [],
-      otherMats: [],
-      samples: [],
-    }] 
-  }
-  );
-}
+  arr.unshift({
+    car: recRegion === `nn` ? `НН` : recRegion === `spb` ? `СПБ` : ``,
+    shops: [
+      {
+        name:
+          recRegion === `nn`
+            ? `РЕКЛАМАЦИИ НН`
+            : recRegion === `spb`
+            ? `РЕКЛАМАЦИИ СПБ`
+            : `РЕКЛАМАЦИИ СПБ И НН`,
+        materials: [],
+        orders: [],
+        otherMats: [],
+        samples: [],
+      },
+    ],
+  });
+};
 
 const novgorod = () => {
   shipmentTitle = `Нижний Новгород`;
@@ -213,7 +227,7 @@ const piter = () => {
   document.querySelector(`.print-area`).innerHTML = "";
   createTableParents();
   const spb = objectsArr.filter((obj) => obj.shipment === `spb`);
-  addReclamations(spb, `spb`)
+  addReclamations(spb, `spb`);
   countRowsAndOrders(spb);
   mainTable(spb);
 };
@@ -246,8 +260,8 @@ const mainTable = (currentArr) => {
     currentArr.forEach((car) => {
       car.shops.forEach((shop) => {
         if (shop.towel) {
-          towels = true;
-          tableHeader.splice(10, 0, `Полот.`);
+          // towels = true;
+          // tableHeader.splice(10, 0, `Полот.`);
           document.querySelector(`.table`).classList.remove(`no-towels`);
           document.querySelector(`.table`).classList.add(`some-towels`);
         }
@@ -303,8 +317,8 @@ const mainTable = (currentArr) => {
     //
     table = document.querySelector(`.table`);
     let number = 0;
-    currentArr.forEach((obj, i) => {
-      obj.shops.forEach((shop, j) => {
+    currentArr.forEach((obj) => {
+      obj.shops.forEach((shop) => {
         //table row number
         number += 1;
         const num = document.createElement(`div`);
@@ -393,9 +407,7 @@ const mainTable = (currentArr) => {
           towel.classList.add(`cell`);
           towel.classList.add(`towel`);
           towel.classList.add(`warehouse`);
-          shop.towel
-          ? towel.innerHTML = shop.towel
-          : null
+          shop.towel ? (towel.innerHTML = shop.towel) : null;
           table.appendChild(towel);
         }
         //other
@@ -646,7 +658,6 @@ document.getElementById("file").onchange = function () {
         shop.samples = [];
         shop.materials.forEach((mat) => {
           isWarningMaterial(mat, shop);
-          // if (mat[0].includes(`образ`) || mat[0].includes(`Образ`)) {
           if (mat[0].includes(`фасад`) || mat[0].includes(`50х50`)) {
             shop.samples.push(mat);
           } else if (mat[0].includes(`80 полос`)) {
@@ -658,7 +669,6 @@ document.getElementById("file").onchange = function () {
               ? (shop.thinCatalog = `<p>${mat[1]}</p><p>МСК</p>`)
               : (shop.thinCatalog = `<p>${mat[1]}</p><p>РЕГ</p>`);
           } else if (mat[0].includes(`Блокнот`)) {
-            // shop.notebook = mat[1];
             shop.notebook = `<p>${mat[1]}</p>`;
           } else if (mat[0].includes(`Кружка белая с логотипом`)) {
             shop.cup = `<p>${mat[1]}</p>`;
@@ -669,6 +679,7 @@ document.getElementById("file").onchange = function () {
           } else if (mat[0].includes(`Шампанское`)) {
             shop.vine = `<p>${mat[1]}</p>`;
           } else if (mat[0].includes(`Полотенце с логотипом в тубусе`)) {
+            towels = true;
             shop.towel = `<p>${mat[1]}</p>`;
           } else shop.otherMats.push(cutName(mat));
         });

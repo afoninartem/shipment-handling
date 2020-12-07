@@ -57,8 +57,6 @@ body {
 
 .table {
   display: grid;
-  /* grid-template-columns: 25px 100px max-content repeat(7, max-content) max-content 100px 100px; */
-  /* grid-template-columns: 25px 100px; */
   border: 1px solid black;
   /* font-size: 16px; */
 }
